@@ -90,7 +90,7 @@ class AuthorizationTest < ActiveSupport::TestCase
     assert Seek::Permissions::Authorization.access_type_allows_action?("delete", Policy::MANAGING), "'delete' action should have been allowed with access_type set to 'Policy::MANAGING'"
     assert Seek::Permissions::Authorization.access_type_allows_action?("manage", Policy::MANAGING), "'manage' action should have been allowed with access_type set to 'Policy::MANAGING'"
   end
-  
+
   
   
   # ****************************************************************************
@@ -691,6 +691,19 @@ class AuthorizationTest < ActiveSupport::TestCase
     disable_authorization_checks{version.save}
 
     assert !df.reload.can_delete?(User.current_user)
+  end
+
+  test 'old all registered users sharing policy honoured' do
+    df = Factory(:data_file,policy:Factory(:policy,sharing_scope:Policy::ALL_USERS,access_type:Policy::ACCESSIBLE))
+    user = Factory(:person).user
+
+    refute Seek::Permissions::Authorization.is_authorized?("edit",df,user)
+    assert Seek::Permissions::Authorization.is_authorized?("download",df,user)
+    assert Seek::Permissions::Authorization.is_authorized?("view",df,user)
+
+    refute Seek::Permissions::Authorization.is_authorized?("edit",df,nil)
+    refute Seek::Permissions::Authorization.is_authorized?("download",df,nil)
+    refute Seek::Permissions::Authorization.is_authorized?("view",df,nil)
   end
 
   private 
