@@ -1,4 +1,4 @@
-class CleanAssayCreatorsForDeprecated < ActiveRecord::Migration
+class CleanAssetCreatorsForDeprecated < ActiveRecord::Migration
   def up
     execute "DELETE FROM assets_creators WHERE asset_type='DeprecatedSpecimen';"
     execute "DELETE FROM assets_creators WHERE asset_type='DeprecatedSample';"
@@ -6,6 +6,6 @@ class CleanAssayCreatorsForDeprecated < ActiveRecord::Migration
   end
 
   def down
-    #no reversible
+    #not reversible
   end
 end
